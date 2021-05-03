@@ -1,0 +1,8 @@
+1/1: Building Test (Test.idr)
+Test> Right (4, ("thrown-return", 26))
+Test> Right (1, ())
+Test> (0, Right ())
+Test> [23, 22, 21]
+Test> Right ("pure", [6, 5, 4, 3, 2, 1, 0])
+Test> Right ("on throw", [3, 2, 1, 0])
+Test> Bye for now!

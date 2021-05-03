@@ -1,0 +1,25 @@
+package effect
+version = 0.1.0
+authors = "Russoul"
+license = "The 3-Clause BSD License"
+sourceloc = "www.github.com/Russoul/Idris2-Effect"
+bugtracker = "www.github.com/Russoul/Idris2-Effect/issues"
+
+modules = Control.Algebra
+        , Control.HigherOrder
+
+        , Control.Monad.Free
+
+        , Control.Cont.Exception
+        , Control.Cont.IO
+        , Control.Cont.Out
+        , Control.Cont.State
+        , Control.Cont.Thread
+        , Control.Cont.Void
+
+        , Control.Effect.Exception
+        , Control.Effect.Misc
+        , Control.Effect.Reader
+        , Control.Effect.Writer
+
+sourcedir = "src"

@@ -1,0 +1,6 @@
+package test001
+
+depends = effect
+main = Test
+
+executable = test
