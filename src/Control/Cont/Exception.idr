@@ -1,6 +1,6 @@
 module Control.Cont.Exception
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 import Control.Monad.Free
 

@@ -5,7 +5,7 @@ license = "The 3-Clause BSD License"
 sourceloc = "www.github.com/Russoul/Idris2-Effect"
 bugtracker = "www.github.com/Russoul/Idris2-Effect/issues"
 
-modules = Control.Algebra
+modules = Control.EffectAlgebra
         , Control.HigherOrder
 
         , Control.Monad.Free

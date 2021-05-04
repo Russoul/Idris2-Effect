@@ -6,4 +6,5 @@ runEitherE False
 runEitherE True
 runReaderSum
 :exec runTestWriterIO
+runIncr
 :q

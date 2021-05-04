@@ -1,4 +1,4 @@
-module Control.Algebra
+module Control.EffectAlgebra
 
 import public Control.HigherOrder
 import public Control.Effect.Misc

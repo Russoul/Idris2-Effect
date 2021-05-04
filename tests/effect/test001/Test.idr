@@ -11,13 +11,15 @@ import Control.Monad.Writer
 import Control.Monad.Either
 import Control.Monad.Identity
 import Control.Monad.Free
+import Control.Monad.State
 
-import Control.Algebra
+import Control.EffectAlgebra
 import Control.Effect.Exception
 import Control.Effect.Labelled
 import Control.Effect.Lift
 import Control.Effect.Reader
 import Control.Effect.Writer
+import Control.Effect.State
 import Control.Cont.Void
 import Control.Cont.State
 import Control.Cont.Thread
@@ -28,27 +30,27 @@ import Control.Cont.Exception
 -------------------------------------
 throwSnapshot : (Syntax sig, Sub (EitherC (e, s)) sig, Sub (StateC s) sig) => e -> Free sig a
 throwSnapshot err = do
-  v <- get {s}
+  v <- Cont.State.get {s}
   throw (err, v)
 
 decr : (Syntax sig, Sub (StateC Int) sig, Sub (EitherC ()) sig) => Free sig ()
 decr = do
-  x <- get {s = Int}
-  if x > 0 then put (x - 1)
+  x <- Cont.State.get {s = Int}
+  if x > 0 then Cont.State.put (x - 1)
      else throw ()
 
-incr : (Syntax sig, Sub (StateC Int) sig) => Free sig ()
-incr = do
-  x <- get {s = Int}
-  put (x + 1)
+incrC : (Syntax sig, Sub (StateC Int) sig) => Free sig ()
+incrC = do
+  x <- Cont.State.get {s = Int}
+  Cont.State.put (x + 1)
 
 testStateExc : Syntax sig
            => (s : Sub (StateC Int) sig)
            => (e : Sub (EitherC (String, Int)) sig)
            => Free sig (String, Int)
 testStateExc = do
-  catch {e = (String, Int)} (incr >> throwSnapshot {s = Int} "thrown") \(str, i) => do
-    incr >> return (str ++ "-return", i + 22)
+  catch {e = (String, Int)} (incrC >> throwSnapshot {s = Int} "thrown") \(str, i) => do
+    incrC >> return (str ++ "-return", i + 22)
 
 testStateExcRun : Either (String, Int) (Int, (String, Int))
 testStateExcRun = runVoidC . runEitherC . runStateC 3 $ testStateExc
@@ -165,6 +167,21 @@ runTestWriterIO = runReaderT 2 $ testWriterIO
   {r = L}
   {io = R}
   {al = the (Algebra _ $ ReaderT Int IO) %search}
+
+-----------------------
+
+incrE : (s : Sub (StateE Int) sig)
+     => (al : Algebra sig m)
+     => m ()
+incrE = do
+  x <- Effect.State.get {s = Int}
+  Effect.State.put (x + 1)
+
+runIncr : Int
+runIncr = runIdentity . map fst . runStateT 0 $ incrE
+  {sig = StateE Int :+: VoidE}
+  {s = L}
+  {al = the (Algebra _ $ StateT Int Identity) %search}
 
 -----------------------
 

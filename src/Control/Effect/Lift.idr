@@ -1,6 +1,6 @@
 module Control.Effect.Lift
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 public export
 Monad m => Algebra (Lift m) m where

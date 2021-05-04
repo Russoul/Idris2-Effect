@@ -1,6 +1,6 @@
 module Control.Effect.Writer
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 import Control.Monad.Writer
 
@@ -12,9 +12,18 @@ data WriterE : Type -> (Type -> Type) -> Type -> Type where
 public export
 [Overwrite] Algebra sig m => Algebra (WriterE s :+: sig) (WriterT s m) where
   alg ctx hdl (Inl (Tell s)) = MkWriterT \_ => pure (ctx, s)
-  alg ctx hdl (Inr x) = MkWriterT \r => do
-   res <- alg {m} ctx (map fst . (flip unWriterT r) . hdl) x
-   pure (res, r)
+  alg ctxx hdl (Inr x) = MkWriterT \r => do
+   res <- alg
+     {f = Functor.Compose @{(FunLeftPair, %search)}}
+     (ctxx, r) h x
+   pure res
+   where
+    h : Handler ((,s) . ctx) n m
+    h =
+       (~<~) {g = FunLeftPair}
+        {ctx1 = (,s), ctx2 = ctx}
+        {l = n}
+        {m = WriterT s m} {n = m} (uncurry unWriterT) hdl
 
 ||| Newer writes are concatenated from the left, via the `Monoid` instance.
 public export

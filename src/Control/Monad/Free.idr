@@ -1,6 +1,6 @@
 module Control.Monad.Free
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 ||| Higher-order free monad.
 ||| Acts as a syntax generator of effectful programs.

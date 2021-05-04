@@ -1,6 +1,6 @@
 module Control.Cont.Void
 
-import Control.Algebra
+import Control.EffectAlgebra
 import Control.HigherOrder
 
 import Control.Monad.Free

@@ -1,6 +1,6 @@
 module Control.Effect.Labelled
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 public export
 data Labelled : (label : k)

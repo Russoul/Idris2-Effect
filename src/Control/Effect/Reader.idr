@@ -1,6 +1,6 @@
 module Control.Effect.Reader
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 import Control.Monad.Reader
 

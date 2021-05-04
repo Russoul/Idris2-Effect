@@ -1,6 +1,7 @@
 package test001
 
 depends = effect
+modules = Test
 main = Test
 
 executable = test

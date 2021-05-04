@@ -1,6 +1,6 @@
 module Control.Effect.Exception
 
-import Control.Algebra
+import Control.EffectAlgebra
 
 import Control.Monad.Either
 

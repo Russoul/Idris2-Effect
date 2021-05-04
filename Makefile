@@ -1,6 +1,15 @@
+include config.mk
+
 INTERACTIVE ?= --interactive
 
 .PHONY: test copy-ttc-for-test
+
+IDRIS_MAJOR=0
+IDRIS_MINOR=3
+IDRIS_PATCH=0
+
+export IDRIS2_VERSION := ${IDRIS_MAJOR}.${IDRIS_MINOR}.${IDRIS_PATCH}
+IDRIS_NAME_VERSION := idris2-${IDRIS2_VERSION}
 
 MAJOR=0
 MINOR=1
@@ -19,6 +28,10 @@ build:
 
 install:
 	idris2 --install effect.ipkg
+
+install-src:
+	mkdir -p ${PREFIX}/${IDRIS_NAME_VERSION}-src
+	cp -R src/* ${PREFIX}/${IDRIS_NAME_VERSION}-src/
 
 clean:
 	$(RM) -rf build
