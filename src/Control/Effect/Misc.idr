@@ -10,6 +10,6 @@ namespace Functor
    map f x = f x
 
   public export
-  [FunLeftPair] Functor (, s) where
+  [LeftPair] Functor (, s) where
     map f (x, y) = (f x, y)
 

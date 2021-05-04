@@ -2,7 +2,7 @@ include config.mk
 
 INTERACTIVE ?= --interactive
 
-.PHONY: test copy-ttc-for-test
+.PHONY: build install install-src clean test copy-ttc-for-test
 
 IDRIS_MAJOR=0
 IDRIS_MINOR=3

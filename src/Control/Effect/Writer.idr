@@ -14,13 +14,13 @@ public export
   alg ctx hdl (Inl (Tell s)) = MkWriterT \_ => pure (ctx, s)
   alg ctxx hdl (Inr x) = MkWriterT \r => do
    res <- alg
-     {f = Functor.Compose @{(FunLeftPair, %search)}}
+     {f = Functor.Compose @{(Functor.LeftPair, %search)}}
      (ctxx, r) h x
    pure res
    where
     h : Handler ((,s) . ctx) n m
     h =
-       (~<~) {g = FunLeftPair}
+       (~<~) {g = Functor.LeftPair}
         {ctx1 = (,s), ctx2 = ctx}
         {l = n}
         {m = WriterT s m} {n = m} (uncurry unWriterT) hdl
@@ -34,13 +34,13 @@ public export
    -- h : Handler (,s) (WriterT s m) m
    -- h ~<~ hdl : Handler ((, s) . ctx) n m
    res <- alg
-     {f = Functor.Compose @{(FunLeftPair, %search)}}
+     {f = Functor.Compose @{(Functor.LeftPair, %search)}}
      (ctxx, r) h x
    pure res
    where
     h : Handler ((,s) . ctx) n m
     h =
-       (~<~) {g = FunLeftPair}
+       (~<~) {g = Functor.LeftPair}
         {ctx1 = (,s), ctx2 = ctx}
         {l = n}
         {m = WriterT s m} {n = m} (uncurry unWriterT) hdl
