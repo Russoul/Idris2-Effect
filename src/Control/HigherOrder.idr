@@ -114,6 +114,12 @@ data Lift : (sig : (Type -> Type))
          -> ((Type -> Type) -> (Type -> Type)) where
   MkLift : sig (m a) -> Lift sig m a
 
+
+||| Alias for use as an effect.
+public export
+LiftE : (sig : Type -> Type) -> (Type -> Type) -> (Type -> Type)
+LiftE = Lift
+
 public export
 Functor sig => HFunctor (Lift sig) where
   hmap t (MkLift op) = MkLift (map t op)

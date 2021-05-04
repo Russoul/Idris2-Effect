@@ -23,5 +23,6 @@ modules = Control.EffectAlgebra
         , Control.Effect.Misc
         , Control.Effect.Reader
         , Control.Effect.Writer
+        , Control.Effect.State
 
 sourcedir = "src"

@@ -5,8 +5,8 @@ import Control.HigherOrder
 
 import Control.Monad.State
 
-import Control.Effect.Reader
-import Control.Effect.Writer
+import public Control.Effect.Reader
+import public Control.Effect.Writer
 
 public export
 StateE : Type -> (Type -> Type) -> (Type -> Type)

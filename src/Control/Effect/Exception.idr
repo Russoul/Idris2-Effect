@@ -18,6 +18,11 @@ try : Sub (EitherE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
 try x err = send {sig} {eff = EitherE e} (Try x err)
 
 public export
+fromEither : Sub (EitherE e) sig => Algebra sig m => Either e b -> m b
+fromEither (Left err) = fail err
+fromEither (Right x) = pure x
+
+public export
 Algebra sig m => Algebra (EitherE e :+: sig) (EitherT e m) where
   alg ctx hdl (Inl (Fail x)) = left x
   alg ctx hdl (Inl (Try t er)) =
