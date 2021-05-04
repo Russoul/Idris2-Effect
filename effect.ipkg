@@ -18,6 +18,8 @@ modules = Control.Algebra
         , Control.Cont.Void
 
         , Control.Effect.Exception
+        , Control.Effect.Labelled
+        , Control.Effect.Lift
         , Control.Effect.Misc
         , Control.Effect.Reader
         , Control.Effect.Writer

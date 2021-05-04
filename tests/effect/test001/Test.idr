@@ -13,9 +13,11 @@ import Control.Monad.Identity
 import Control.Monad.Free
 
 import Control.Algebra
-import Control.Effect.Writer
-import Control.Effect.Reader
 import Control.Effect.Exception
+import Control.Effect.Labelled
+import Control.Effect.Lift
+import Control.Effect.Reader
+import Control.Effect.Writer
 import Control.Cont.Void
 import Control.Cont.State
 import Control.Cont.Thread
@@ -104,11 +106,11 @@ runFused = runIdentity . map snd . runWriterT . runReaderT 20 $ handleFused
 -----------------------
 
 testEitherE : (a : Algebra sig m)
-       => (r : Sub (ReaderE Nat) sig)
-       => (w : Sub (WriterE (List Nat)) sig)
-       => (e : Sub (EitherE String) sig)
-       => (toThrow : Bool)
-       -> m String
+           => (r : Sub (ReaderE Nat) sig)
+           => (w : Sub (WriterE (List Nat)) sig)
+           => (e : Sub (EitherE String) sig)
+           => (toThrow : Bool)
+           -> m String
 testEitherE toThrow = do
   x <- ask {r = Nat}
   tell {w = List Nat} [1, x]
@@ -127,6 +129,25 @@ handleEitherE x = testEitherE x {sig = WriterE (List Nat) :+: ReaderE Nat :+: Ei
 
 runEitherE : Bool -> Either String (String, List Nat)
 runEitherE x = runIdentity . runEitherT . runReaderT 0 . runWriterT $ handleEitherE x
+
+-----------------------
+
+readerSum : (rx : SubL "x" (ReaderE Int) sig)
+         => (ry : SubL "y" (ReaderE Int) sig)
+         => (al : Algebra sig m)
+         => m Int
+readerSum = do
+  a <- labelled "x" Ask
+  b <- labelled "y" Ask
+  pure (a + b)
+
+runReaderSum : Int
+runReaderSum =
+  runIdentity . runReaderT 1 . runReaderT 2 $ readerSum
+  {sig = ReaderE Int :+: ReaderE Int :+: VoidE}
+  {rx = Label @{L}}
+  {ry = Label @{T @{L} @{R}}}
+  {al = the (Algebra _ $ ReaderT Int (ReaderT Int Identity)) %search}
 
 -----------------------
 

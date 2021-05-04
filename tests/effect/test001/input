@@ -4,4 +4,5 @@ runGlobal
 runFused
 runEitherE False
 runEitherE True
+runReaderSum
 :q
