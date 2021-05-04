@@ -151,5 +151,22 @@ runReaderSum =
 
 -----------------------
 
+testWriterIO : (r : Sub (ReaderE Int) sig)
+            => (io : Sub (Lift IO) sig)
+            => (al : Algebra sig m)
+            => m ()
+testWriterIO = do
+  x <- ask {r = Int}
+  lift {n = IO} (putStrLn (show x))
+
+runTestWriterIO : IO ()
+runTestWriterIO = runReaderT 2 $ testWriterIO
+  {sig = ReaderE Int :+: Lift IO}
+  {r = L}
+  {io = R}
+  {al = the (Algebra _ $ ReaderT Int IO) %search}
+
+-----------------------
+
 main : IO ()
 main = pure ()

@@ -5,4 +5,5 @@ runFused
 runEitherE False
 runEitherE True
 runReaderSum
+:exec runTestWriterIO
 :q

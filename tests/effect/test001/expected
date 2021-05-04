@@ -6,4 +6,5 @@ Test> [23, 22, 21]
 Test> Right ("pure", [6, 5, 4, 3, 2, 1, 0])
 Test> Right ("on throw", [3, 2, 1, 0])
 Test> 3
+Test> 2
 Test> Bye for now!
