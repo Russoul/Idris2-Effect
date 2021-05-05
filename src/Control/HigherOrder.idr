@@ -39,35 +39,45 @@ HFunctor sig1 => HFunctor sig2 => HFunctor (sig1 :+: sig2) where
   hmap t (Inl op) = Inl (hmap t op)
   hmap t (Inr op) = Inr (hmap t op)
 
+
 public export
-interface Sub (0 sub : (Type -> Type) -> (Type -> Type))
+interface Prj (0 sup : (Type -> Type) -> (Type -> Type))
+              (0 sub : (Type -> Type) -> (Type -> Type)) | sub where
+  constructor MkPrj
+  prj : sup m a -> sub m a
+
+||| Inj forms a category.
+public export
+interface Inj (0 sub : (Type -> Type) -> (Type -> Type))
               (0 sup : (Type -> Type) -> (Type -> Type)) | sub where
-  constructor MkSub
+  constructor MkInj
   inj : sub m a -> sup m a
-  prj : sup m a -> Maybe (sub m a)
 
-namespace Sub
+export
+Prj sub' sub => Inj sub sup => Inj sub' sup where
+  inj = inj . prj {sup = sub', sub}
+
+namespace Inj
+  ||| Identity injection.
   public export
-  [S] Sub sig sig where
+  [S] Inj sig sig where
      inj = id
-     prj = Just
 
+  ||| Composition of injections.
   public export
-  [T] Sub siga sigb => Sub sigb sigc => Sub siga sigc where
-    inj = inj {sub = sigb} {sup = sigc} . inj
-    prj = prj {sub = siga} {sup = sigb} <=< prj
+  [T] Inj siga sigb => Inj sigb sigc => Inj siga sigc where
+    inj = inj {sub = sigb, sup = sigc}
+        . inj {sub = siga, sup = sigb}
 
+  ||| Inject to a Sum from the left.
   public export
-  [L] Sub sig1 (sig1 :+: sig2) where
+  [L] Inj sig1 (sig1 :+: sig2) where
     inj = Inl
-    prj (Inl fa) = Just fa
-    prj _ = Nothing
 
+  ||| Inject to a Sum from the right.
   public export
-  [R] Sub sig2 (sig1 :+: sig2) where
+  [R] Inj sig2 (sig1 :+: sig2) where
     inj = Inr
-    prj (Inr fa) = Just fa
-    prj _ = Nothing
 
 ||| State-preserving transformation of
 ||| a computation in one monad into a computation

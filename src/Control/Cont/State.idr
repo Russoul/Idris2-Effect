@@ -32,20 +32,20 @@ runStateC s (Op (Inr op)) =
   Op (weave {m1 = ?t} {s = Pair _} (s, ()) (uncurry runStateC) op)
 
 public export
-get : (Sub (StateC s) sig) => Free sig s
+get : (Inj (StateC s) sig) => Free sig s
 get = inject {sub = StateC s} (MkLift (Get Return))
 
 public export
-put : (Sub (StateC s) sig) => s -> Free sig ()
+put : (Inj (StateC s) sig) => s -> Free sig ()
 put val = inject {sub = StateC s} (MkLift (Put val (Return ())))
 
 public export
-modify : Syntax sig => Sub (StateC s) sig => (s -> s) -> Free sig ()
+modify : Syntax sig => Inj (StateC s) sig => (s -> s) -> Free sig ()
 modify f = do
   v <- get
   put (f v)
 
 public export
-withSt : Syntax sig => Sub (StateC st) sig => a -> Free sig (st, a)
+withSt : Syntax sig => Inj (StateC st) sig => a -> Free sig (st, a)
 withSt x = map (, x) get
 

@@ -50,14 +50,14 @@ runEitherC (Op (Inr op)) = Op (weave {s = Either e} (Right ()) hdl op) where
   hdl = either (Return . Left) runEitherC
 
 public export
-throw : (Sub (EitherC e) sig) => e -> Free sig a
+throw : (Inj (EitherC e) sig) => e -> Free sig a
 throw err = inject {sub = EitherC e} (Throw err)
 
 public export
-catch : (p : Sub (EitherC e) sig) => Free sig a -> (e -> Free sig a) -> Free sig a
+catch : (p : Inj (EitherC e) sig) => Free sig a -> (e -> Free sig a) -> Free sig a
 catch p h = inject {sub = EitherC e} (Catch p h Return)
 
 public export
-orThrow : Syntax sig => Sub (EitherC e) sig => Maybe a -> Free sig e -> Free sig a
+orThrow : Syntax sig => Inj (EitherC e) sig => Maybe a -> Free sig e -> Free sig a
 orThrow Nothing e  = e >>= throw
 orThrow (Just x) e = return x

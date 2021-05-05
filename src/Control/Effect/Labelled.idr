@@ -38,19 +38,19 @@ Algebra (eff :+: sig) (sub m)
         ctxx (runLabelled . hdl) (Inr x)
 
 public export
-interface SubL (0 label : k)
-                      (0 sub : (Type -> Type) -> (Type -> Type))
-                      (0 sup : (Type -> Type) -> (Type -> Type)) | label where
+interface InjL (0 label : k)
+               (0 sub : (Type -> Type) -> (Type -> Type))
+               (0 sup : (Type -> Type) -> (Type -> Type)) | label where
   constructor MkSubL
   injLabelled : Labelled label sub m a -> sup m a
 
 public export
-[Label] Sub sub sup => SubL label sub sup where
+[Label] Inj sub sup => InjL label sub sup where
   injLabelled (MkLabelled x) = inj x
 
 public export
 labelled : (label : k)
-        -> SubL label sub sig
+        -> InjL label sub sig
         => Algebra sig m
         => sub m a -> m a
 labelled label @{sub} x =

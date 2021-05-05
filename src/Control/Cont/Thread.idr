@@ -16,11 +16,11 @@ HThread : (Type -> Type) -> (Type -> Type)
 HThread = Thread
 
 public export
-yield : Sub Thread sig => Free sig ()
+yield : Inj Thread sig => Free sig ()
 yield = inject $ Yield $ return ()
 
 public export
-fork : Sub Thread sig => Free sig a -> Free sig ()
+fork : Inj Thread sig => Free sig a -> Free sig ()
 fork d = inject $ Fork d $ return ()
 
 public export

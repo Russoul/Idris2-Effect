@@ -28,25 +28,25 @@ import Control.Cont.IO
 import Control.Cont.Exception
 
 -------------------------------------
-throwSnapshot : (Syntax sig, Sub (EitherC (e, s)) sig, Sub (StateC s) sig) => e -> Free sig a
+throwSnapshot : (Syntax sig, Inj (EitherC (e, s)) sig, Inj (StateC s) sig) => e -> Free sig a
 throwSnapshot err = do
   v <- Cont.State.get {s}
   throw (err, v)
 
-decr : (Syntax sig, Sub (StateC Int) sig, Sub (EitherC ()) sig) => Free sig ()
+decr : (Syntax sig, Inj (StateC Int) sig, Inj (EitherC ()) sig) => Free sig ()
 decr = do
   x <- Cont.State.get {s = Int}
   if x > 0 then Cont.State.put (x - 1)
      else throw ()
 
-incrC : (Syntax sig, Sub (StateC Int) sig) => Free sig ()
+incrC : (Syntax sig, Inj (StateC Int) sig) => Free sig ()
 incrC = do
   x <- Cont.State.get {s = Int}
   Cont.State.put (x + 1)
 
 testStateExc : Syntax sig
-           => (s : Sub (StateC Int) sig)
-           => (e : Sub (EitherC (String, Int)) sig)
+           => (s : Inj (StateC Int) sig)
+           => (e : Inj (EitherC (String, Int)) sig)
            => Free sig (String, Int)
 testStateExc = do
   catch {e = (String, Int)} (incrC >> throwSnapshot {s = Int} "thrown") \(str, i) => do
@@ -59,18 +59,18 @@ testStateExcRun = runVoidC . runEitherC . runStateC 3 $ testStateExc
 
 -------------------------------------
 
-tripleDecr : Syntax sig => (s : Sub (StateC Int) sig) => (e : Sub (EitherC ()) sig) => Free sig ()
+tripleDecr : Syntax sig => (s : Inj (StateC Int) sig) => (e : Inj (EitherC ()) sig) => Free sig ()
 tripleDecr = decr >> catch (decr >> decr) return
 
 tripleDecrInst : Free (StateC Int :+: (EitherC () :+: VoidE)) ()
 tripleDecrInst = tripleDecr
-  {e = MkSub (Inr . Inl) \case Inr (Inl x) => Just x; _ => Nothing}
-  {s = MkSub Inl \case (Inl x) => Just x; _ => Nothing}
+  {e = MkInj (Inr . Inl)}
+  {s = MkInj Inl}
 
 tripleDecrInst' : Free (EitherC () :+: (StateC Int :+: VoidE)) ()
 tripleDecrInst' = tripleDecr
-  {e = MkSub Inl \case (Inl x) => Just x; _ => Nothing}
-  {s = MkSub (Inr . Inl) \case (Inr (Inl x)) => Just x; _ => Nothing}
+  {e = MkInj Inl}
+  {s = MkInj (Inr . Inl)}
 
 runLocal : Either () (Int, ())
 runLocal = runVoidC . runEitherC . runStateC 2 $ tripleDecrInst
@@ -84,8 +84,8 @@ runGlobal = runVoidC . runStateC 2 . runEitherC $ tripleDecrInst'
 %hide Control.Monad.Reader.Interface.ask
 
 testFused : (a : Algebra sig m)
-      => (r : Sub (ReaderE Nat) sig)
-      => (w : Sub (WriterE (List Nat)) sig)
+      => (r : Inj (ReaderE Nat) sig)
+      => (w : Inj (WriterE (List Nat)) sig)
       => m String
 testFused = do
   x <- ask {r = Nat}
@@ -108,9 +108,9 @@ runFused = runIdentity . map snd . runWriterT . runReaderT 20 $ handleFused
 -----------------------
 
 testEitherE : (a : Algebra sig m)
-           => (r : Sub (ReaderE Nat) sig)
-           => (w : Sub (WriterE (List Nat)) sig)
-           => (e : Sub (EitherE String) sig)
+           => (r : Inj (ReaderE Nat) sig)
+           => (w : Inj (WriterE (List Nat)) sig)
+           => (e : Inj (EitherE String) sig)
            => (toThrow : Bool)
            -> m String
 testEitherE toThrow = do
@@ -134,8 +134,8 @@ runEitherE x = runIdentity . runEitherT . runReaderT 0 . runWriterT $ handleEith
 
 -----------------------
 
-readerSum : (rx : SubL "x" (ReaderE Int) sig)
-         => (ry : SubL "y" (ReaderE Int) sig)
+readerSum : (rx : InjL "x" (ReaderE Int) sig)
+         => (ry : InjL "y" (ReaderE Int) sig)
          => (al : Algebra sig m)
          => m Int
 readerSum = do
@@ -153,8 +153,8 @@ runReaderSum =
 
 -----------------------
 
-testWriterIO : (r : Sub (ReaderE Int) sig)
-            => (io : Sub (Lift IO) sig)
+testWriterIO : (r : Inj (ReaderE Int) sig)
+            => (io : Inj (Lift IO) sig)
             => (al : Algebra sig m)
             => m ()
 testWriterIO = do
@@ -170,7 +170,7 @@ runTestWriterIO = runReaderT 2 $ testWriterIO
 
 -----------------------
 
-incrE : (s : Sub (StateE Int) sig)
+incrE : (s : Inj (StateE Int) sig)
      => (al : Algebra sig m)
      => m ()
 incrE = do

@@ -10,16 +10,16 @@ data EitherE : Type -> (Type -> Type) -> Type -> Type where
   Try : m a -> (e -> m a) -> EitherE e m a
 
 public export
-fail : Sub (EitherE e) sig => Algebra sig m => e -> m a
+fail : Inj (EitherE e) sig => Algebra sig m => e -> m a
 fail x = send {sig} {eff = EitherE e} (Fail x)
 
 public export
-try : Sub (EitherE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
+try : Inj (EitherE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
 try x err = send {sig} {eff = EitherE e} (Try x err)
 
 public export
-fromEither : Sub (EitherE e) sig => Algebra sig m => Either e b -> m b
-fromEither (Left err) = fail err
+fromEither : Inj (EitherE e) sig => Algebra sig m => Either e b -> m b
+fromEither (Left err) = fail {sig} err
 fromEither (Right x) = pure x
 
 public export

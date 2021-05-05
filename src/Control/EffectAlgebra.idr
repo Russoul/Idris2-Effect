@@ -12,5 +12,5 @@ interface Monad m => Algebra sig m where
      -> m (ctx a)
 
 public export
-send : Sub eff sig => Algebra sig m => eff m a -> m a
+send : Inj eff sig => Algebra sig m => eff m a -> m a
 send eff = alg {sig} {ctx = id} () id (inj eff)

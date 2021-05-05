@@ -10,7 +10,7 @@ data ReaderE : Type -> (Type -> Type) -> Type -> Type where
   Ask : ReaderE s m s
 
 public export
-ask : Sub (ReaderE r) sig => Algebra sig m => m r
+ask : Inj (ReaderE r) sig => Algebra sig m => m r
 ask = send {sig} {eff = ReaderE r} Ask
 
 ||| Apply the reader effect of the signature to the underlying monad,

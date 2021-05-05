@@ -46,6 +46,6 @@ public export
         {m = WriterT s m} {n = m} (uncurry unWriterT) hdl
 
 public export
-tell : Sub (WriterE w) sig => Algebra sig m => w -> m ()
+tell : Inj (WriterE w) sig => Algebra sig m => w -> m ()
 tell s = send {sig} {eff = WriterE w} (Tell s)
 

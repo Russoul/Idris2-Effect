@@ -26,5 +26,5 @@ runIO (Return x) = pure x
 runIO (Op (MkHIO x k)) = x `io_bind` runIO . k
 
 public export
-io : Syntax sig => Sub HIO sig => IO a -> Free sig a
+io : Syntax sig => Inj HIO sig => IO a -> Free sig a
 io x = inject {sub = HIO} (MkHIO x Return)

@@ -33,11 +33,11 @@ return : a -> Free sig a
 return = Return
 
 public export
-inject : Sub sub sup => sub (Free sup) a -> Free sup a
+inject : Inj sub sup => sub (Free sup) a -> Free sup a
 inject = Op . inj
 
 public export
-project : Sub sub sup => Free sup a -> Maybe (sub (Free sup) a)
-project (Op s) = prj s
+project : Prj sup sub => Free sup a -> Maybe (sub (Free sup) a)
+project (Op s) = Just (prj s)
 project _ = Nothing
 

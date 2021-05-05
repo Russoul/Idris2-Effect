@@ -22,6 +22,6 @@ runOut (Op (MkLift (MkOut s p))) =
   putStrLn s `io_bind` \_ => runOut p
 
 public export
-out : Sub HOut sig => String -> Free sig ()
+out : Inj HOut sig => String -> Free sig ()
 out x = inject {sub = HOut} $ MkLift $ MkOut x (return ())
 
