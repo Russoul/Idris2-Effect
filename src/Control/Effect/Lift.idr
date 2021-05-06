@@ -11,6 +11,7 @@ namespace Algebra
   HintLift : Monad m => Algebra (Lift m) m
   HintLift = Lift
 
+||| Lift a computation to the underlying effect stack.
 public export
 lift : Monad n => Inj (Lift n) sig => Algebra sig m => n a -> m a
 lift x = send {eff = Lift n} {sig} $ MkLift (map pure x)

@@ -4,9 +4,15 @@ import Control.EffectAlgebra
 
 import Control.Monad.Writer
 
+||| Writer effect.
 public export
 data WriterE : Type -> (Type -> Type) -> Type -> Type where
   Tell : s -> WriterE s m ()
+
+||| Write the value to the context within a monadic context that supports it.
+public export
+tell : Inj (WriterE w) sig => Algebra sig m => w -> m ()
+tell s = send {sig} {eff = WriterE w} (Tell s)
 
 namespace Algebra
   ||| Successive writes overwrite the preceding state.
@@ -45,8 +51,3 @@ namespace Algebra
           {ctx1 = (,s), ctx2 = ctx}
           {l = n}
           {m = WriterT s m} {n = m} (uncurry unWriterT) hdl
-
-public export
-tell : Inj (WriterE w) sig => Algebra sig m => w -> m ()
-tell s = send {sig} {eff = WriterE w} (Tell s)
-

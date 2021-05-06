@@ -2,6 +2,9 @@ module Control.Effect.Labelled
 
 import Control.EffectAlgebra
 
+||| Wrap an effect in a label.
+||| This can help disambiguate between multiple identical effects and
+||| lessen the number of type annotations.
 public export
 data Labelled : (label : k)
              -> (sub : (Type -> Type) -> (Type -> Type))
@@ -37,6 +40,7 @@ Algebra (eff :+: sig) (sub m)
     alg {sig = eff :+: sig, m = sub m}
         ctxx (runLabelled . hdl) (Inr x)
 
+||| Higher-order injections where signatures are inferred from the label.
 public export
 interface InjL (0 label : k)
                (0 sub : (Type -> Type) -> (Type -> Type))

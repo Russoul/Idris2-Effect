@@ -6,7 +6,10 @@ import Control.Monad.List
 
 import Data.List1
 
--- TODO rename
+||| Add non-determinism to a computation,
+||| e.i. alternatives for program flow.
+||| Choice between these alternatives is not directly specified and is
+||| deferred to a particular handler.
 public export
 data ChoiceE : (Type -> Type) -> (Type -> Type) where
   Choose : List (m a) -> ChoiceE m a
@@ -40,10 +43,12 @@ namespace Algebra
     f : Handler (ListM m) (ListT m) m
     f = join @{Monad.ListT} . pure
 
+  ||| Handle choice by accumulating all alternatives in a list transformer.
   %hint export
   Concat : (al : Algebra sig m) => Algebra (ChoiceE :+: sig) (ListT m)
   Concat = MkAlgebra @{Monad.ListT} Algebra.alg
 
+||| Introduce non-deterministic branching to a computation.
 public export
 oneOf : Inj ChoiceE sig
      => Algebra sig m

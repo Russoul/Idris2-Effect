@@ -4,15 +4,18 @@ import Control.EffectAlgebra
 
 import Control.Monad.Either
 
+||| Exception effect.
 public export
 data EitherE : Type -> (Type -> Type) -> Type -> Type where
   Fail : e -> EitherE e m a
   Try : m a -> (e -> m a) -> EitherE e m a
 
+||| Fail a computation.
 public export
 fail : Inj (EitherE e) sig => Algebra sig m => e -> m a
 fail x = send {sig} {eff = EitherE e} (Fail x)
 
+||| Try running a computation. If it fails (via Fail) resort to the supplied callback.
 public export
 try : Inj (EitherE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
 try x err = send {sig} {eff = EitherE e} (Try x err)

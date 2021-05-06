@@ -9,6 +9,7 @@ public export
 (~>) : (Type -> Type) -> (Type -> Type) -> Type
 f ~> g = forall a. f a -> g a
 
+||| As above, but with explicit 0-morphisms.
 public export
 0
 (~~>) : (Type -> Type) -> (Type -> Type) -> (Type -> Type)
@@ -25,6 +26,7 @@ interface HFunctor h where
 infixr 8 :+:
 
 ||| Higher-order disjoint union.
+||| Effects are composed via this datatype.
 public export
 data (:+:) : (sig1 : (Type -> Type) -> (Type -> Type))
           -> (sig2 : (Type -> Type) -> (Type -> Type))
@@ -39,13 +41,15 @@ HFunctor sig1 => HFunctor sig2 => HFunctor (sig1 :+: sig2) where
   hmap t (Inl op) = Inl (hmap t op)
   hmap t (Inr op) = Inr (hmap t op)
 
-
+||| Higher order projections.
+||| Prj forms a category.
 public export
 interface Prj (0 sup : (Type -> Type) -> (Type -> Type))
               (0 sub : (Type -> Type) -> (Type -> Type)) | sub where
   constructor MkPrj
   prj : sup m a -> sub m a
 
+||| Higher order injections.
 ||| Inj forms a category.
 public export
 interface Inj (0 sub : (Type -> Type) -> (Type -> Type))
@@ -59,29 +63,34 @@ Prj sub' sub => Inj sub sup => Inj sub' sup where
 
 namespace Inj
   ||| Identity injection.
+  ||| Example: `a :+: b ↦ a :+: b`
   public export
   [S] Inj sig sig where
      inj = id
 
-  ||| Composition of injections.
-  public export
-  [Trans] (inner : Inj siga sigb) => (outer : Inj sigb sigc) => Inj siga sigc where
-    inj = inj {sub = sigb, sup = sigc}
-        . inj {sub = siga, sup = sigb}
-
-  public export
-  T : (inner : Inj siga sigb) -> (outer : Inj sigb sigc) -> Inj siga sigc
-  T inner outer = Trans @{inner} @{outer}
-
   ||| Inject to a Sum from the left.
+  ||| Example: `a ↦ a :+: b`
   public export
   [L] Inj sig1 (sig1 :+: sig2) where
     inj = Inl
 
   ||| Inject to a Sum from the right.
+  ||| Example: `b ↦ a :+: b`
   public export
   [R] Inj sig2 (sig1 :+: sig2) where
     inj = Inr
+
+  ||| Composition of injections.
+  ||| Example: `b ↦ (a :+: b) :+: c`
+  public export
+  [Trans] (inner : Inj siga sigb) => (outer : Inj sigb sigc) => Inj siga sigc where
+    inj = inj {sub = sigb, sup = sigc}
+        . inj {sub = siga, sup = sigb}
+
+  ||| Same as `Trans`, but the two arguments are explicit.
+  public export
+  T : (inner : Inj siga sigb) -> (outer : Inj sigb sigc) -> Inj siga sigc
+  T inner outer = Trans @{inner} @{outer}
 
 ||| State-preserving transformation of
 ||| a computation in one monad into a computation
@@ -95,6 +104,7 @@ Handler : (Type -> Type)
        -> Type
 Handler s m n = s . m ~> n . s
 
+||| Handler with explicit 0-morphism.
 public export
 0
 HandlerX : (Type -> Type)
@@ -122,7 +132,7 @@ Syntax sig1 => Syntax sig2 => Syntax (sig1 :+: sig2) where
   weave s hdl (Inl op) = Inl (weave s hdl op)
   weave s hdl (Inr op) = Inr (weave s hdl op)
 
--- Lift a first-order functor to a higher-order one.
+||| Lift a first-order functor to a second-order one.
 public export
 data Lift : (sig : (Type -> Type))
          -> ((Type -> Type) -> (Type -> Type)) where
@@ -148,6 +158,8 @@ Functor sig => Syntax (Lift sig) where
   weave s hdl (MkLift op) = MkLift $
     map (\p => hdl (map (const p) s)) op
 
+infixr 1 ~<~
+
 -- hdl1 : ctxt1 . m ~> n . ctxt1
 -- hdl2 : ctxt2 . l ~> m . ctxt2
 -- ?    : (ctxt1 . ctxt2) . l ~> n . (ctxt1 . ctxt2)
@@ -158,7 +170,6 @@ Functor sig => Syntax (Lift sig) where
 --  (ctxt1 . m) . ctxt2 ==>
 --  (n . ctxt1) . ctxt2 ===
 --  n . (ctxt1 . ctxt2)
-infixr 1 ~<~
 ||| Fuse two handlers.
 public export
 (~<~) : (f : Functor n)

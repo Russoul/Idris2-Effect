@@ -8,6 +8,7 @@ import Control.Monad.State
 import public Control.Effect.Reader
 import public Control.Effect.Writer
 
+||| State effect - the union of Reader and Writer effects.
 public export
 StateE : Type -> (Type -> Type) -> (Type -> Type)
 StateE s = ReaderE s :+: WriterE s

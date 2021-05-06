@@ -9,6 +9,7 @@ public export
 data ReaderE : Type -> (Type -> Type) -> Type -> Type where
   Ask : ReaderE s m s
 
+||| Read the value within a monadic context that supports it.
 public export
 ask : Inj (ReaderE r) sig => Algebra sig m => m r
 ask = send {sig} {eff = ReaderE r} Ask
