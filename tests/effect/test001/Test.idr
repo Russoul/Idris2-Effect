@@ -188,7 +188,7 @@ runIncr = runIdentity . map fst . runStateT 0 $ incrE
 
 -----------------------
 
-standaloneList : (l : Inj Choice sig)
+standaloneList : (l : Inj ChoiceE sig)
               => (al : Algebra sig m)
               => m (Int, Int)
 standaloneList = do
@@ -198,7 +198,7 @@ standaloneList = do
 
 runStandaloneList : List (Int, Int)
 runStandaloneList = runIdentity . runListT $ standaloneList
-  {sig = Choice :+: VoidC}
+  {sig = ChoiceE :+: VoidC}
   {l = L}
   {al = Algebra.Concat}
 
@@ -206,7 +206,7 @@ runStandaloneList = runIdentity . runListT $ standaloneList
 
 %hide Trans.lift
 
-tooBig : (l : Inj Choice sig)
+tooBig : (l : Inj ChoiceE sig)
       => (e : Inj (EitherE Int) sig)
       => (al : Algebra sig m)
       => List Int
@@ -215,7 +215,7 @@ tooBig list = do
   v <- oneOf list
   if v > 5 then fail {e = Int} v else pure v
 
-tooBigCatch : (l : Inj Choice sig)
+tooBigCatch : (l : Inj ChoiceE sig)
            => (e : Inj (EitherE Int) sig)
            => (al : Algebra sig m)
            => List Int
@@ -227,28 +227,28 @@ tooBigCatch list = do
 
 runTooBig : ?
 runTooBig = runIdentity . runListT' . runEitherT $ tooBig [5, 7, 1]
- {sig = EitherE Int :+: Choice :+: VoidE}
+ {sig = EitherE Int :+: ChoiceE :+: VoidE}
  {e = L}
  {l = T L R}
  {al = Algebra.Either @{Algebra.Concat}}
 
 runTooBig' : ?
 runTooBig' = runIdentity . runEitherT . runListT $ tooBig [5, 7, 1]
- {sig =  Choice :+: EitherE Int :+: VoidE}
+ {sig =  ChoiceE :+: EitherE Int :+: VoidE}
  {l = L}
  {e = T L R}
  {al = Algebra.Concat @{Algebra.Either}}
 
 runTooBigCatch : ?
 runTooBigCatch = runIdentity . runListT . runEitherT $ tooBigCatch [5, 7, 1]
- {sig = EitherE Int :+: Choice :+: VoidE}
+ {sig = EitherE Int :+: ChoiceE :+: VoidE}
  {e = L}
  {l = T L R}
  {al = Algebra.Either @{Algebra.Concat}}
 
 runTooBigCatch' : ?
 runTooBigCatch' = runIdentity . runEitherT . runListT $ tooBigCatch [5, 7, 1]
- {sig =  Choice :+: EitherE Int :+: VoidE}
+ {sig =  ChoiceE :+: EitherE Int :+: VoidE}
  {l = L}
  {e = T L R}
  {al = Algebra.Concat @{Algebra.Either}}
@@ -263,7 +263,7 @@ runTooBigCatch' = runIdentity . runEitherT . runListT $ tooBigCatch [5, 7, 1]
 ||| The system handles backtracking of state for us.
 ||| We also print intermediate results to console.
 exceptionStateListPrint :
-     (l : Inj Choice sig)
+     (l : Inj ChoiceE sig)
   => (r : Inj (ReaderE Int) sig)
   => (w : Inj (WriterE (List Int)) sig)
   => (e : Inj (EitherE String) sig)
@@ -288,7 +288,7 @@ exceptionStateListPrint = do
 runExceptionStateListPrint : IO ()
 runExceptionStateListPrint = do
   res <- runEitherT . runWriterT . runListT . runReaderT 50 $ exceptionStateListPrint
-   {sig = ReaderE Int :+: Choice :+: WriterE (List Int) :+: EitherE String :+: Lift IO}
+   {sig = ReaderE Int :+: ChoiceE :+: WriterE (List Int) :+: EitherE String :+: Lift IO}
    {r = L}
    {l = T L R}
    {w = T (T L R) R}
@@ -303,7 +303,7 @@ runExceptionStateListPrint = do
 
 -----------------------
 
-pythag : (l : Inj Choice sig)
+pythag : (l : Inj ChoiceE sig)
       => (al : Algebra sig m)
       => (alt : Alternative m)
       => m (Int, Int, Int)
@@ -316,9 +316,9 @@ pythag = do
 
 runPythag : ?
 runPythag = runIdentity . runListT $ pythag
-  {sig = Choice :+: VoidC}
+  {sig = ChoiceE :+: VoidC}
   {l = L}
-  {al = Algebra.Concat @{Algebra.VoidE}}
+  {al = Algebra.Concat @{Algebra.Void}}
   {alt = ListT}
 
 -----------------------

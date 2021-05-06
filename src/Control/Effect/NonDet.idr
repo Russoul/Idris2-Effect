@@ -8,15 +8,15 @@ import Data.List1
 
 -- TODO rename
 public export
-data Choice : (Type -> Type) -> (Type -> Type) where
-  Choose : List (m a) -> Choice m a
+data ChoiceE : (Type -> Type) -> (Type -> Type) where
+  Choose : List (m a) -> ChoiceE m a
 
 namespace Algebra
   alg :   Algebra sig m
        => (f : Functor ctx)
        => ctx ()
        -> Handler ctx n (ListT m)
-     -> (Choice :+: sig) n a
+     -> (ChoiceE :+: sig) n a
      -> (ListT m) (ctx a)
   alg ctxx hdl (Inl (Choose list)) =
     go list
@@ -41,13 +41,13 @@ namespace Algebra
     f = join @{Monad.ListT} . pure
 
   %hint export
-  Concat : (al : Algebra sig m) => Algebra (Choice :+: sig) (ListT m)
+  Concat : (al : Algebra sig m) => Algebra (ChoiceE :+: sig) (ListT m)
   Concat = MkAlgebra @{Monad.ListT} Algebra.alg
 
 public export
-oneOf : Inj Choice sig
+oneOf : Inj ChoiceE sig
      => Algebra sig m
      => List a
      -> m a
 oneOf list =
-  send {eff = Choice} (Choose (map pure list))
+  send {eff = ChoiceE} (Choose (map pure list))
