@@ -22,16 +22,20 @@ fromEither : Inj (EitherE e) sig => Algebra sig m => Either e b -> m b
 fromEither (Left err) = fail {sig} err
 fromEither (Right x) = pure x
 
-public export
-Algebra sig m => Algebra (EitherE e :+: sig) (EitherT e m) where
-  alg ctx hdl (Inl (Fail x)) = left x
-  alg ctx hdl (Inl (Try t er)) =
-    catchE (hdl (t <$ ctx)) (hdl . (<$ ctx) . er)
-  alg ctxx hdl (Inr other) =
-    let fused = (~<~) {ctx2 = ctx} {m = EitherT e m} f hdl in
-    MkEitherT (alg {f = Functor.Compose} {ctx = Either e . ctx} (Right ctxx) fused other)
-   where
-    f : forall a. Either e (EitherT e m a) -> m (Either e a)
-    f (Left x) = pure (Left x)
-    f (Right x) = runEitherT x
+namespace Algebra
+  public export
+  [Either] (al : Algebra sig m) => Algebra (EitherE e :+: sig) (EitherT e m) where
+    alg ctx hdl (Inl (Fail x)) = left x
+    alg ctx hdl (Inl (Try t er)) =
+      catchE (hdl (t <$ ctx)) (hdl . (<$ ctx) . er)
+    alg ctxx hdl (Inr other) =
+      let fused = (~<~) {ctx2 = ctx} {m = EitherT e m} f hdl in
+      MkEitherT (alg {f = Functor.Compose} {ctx = Either e . ctx} (Right ctxx) fused other)
+     where
+      f : forall a. Either e (EitherT e m a) -> m (Either e a)
+      f (Left x) = pure (Left x)
+      f (Right x) = runEitherT x
 
+  %hint public export
+  AlgebraEither : (al : Algebra sig m) => Algebra (EitherE e :+: sig) (EitherT e m)
+  AlgebraEither = Algebra.Either

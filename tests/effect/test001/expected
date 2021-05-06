@@ -8,4 +8,28 @@ Test> Right ("on throw", [3, 2, 1, 0])
 Test> 3
 Test> 2
 Test> 1
+Test> Just (Right 5)
+Test> Left 7
+Test> [Right 5, Right 7, Right 1]
+Test> Right [5, 7, 1]
+Test> odd: 4 + 9 = 13
+odd: 4 + 25 = 29
+odd: 4 + 49 = 53
+odd: 9 + 4 = 13
+odd: 9 + 16 = 25
+odd: 9 + 36 = 45
+odd: 16 + 9 = 25
+odd: 16 + 25 = 41
+odd: 16 + 49 = 65
+odd: 25 + 4 = 29
+odd: 25 + 16 = 41
+odd: 25 + 36 = 61
+odd: 36 + 9 = 45
+odd: 36 + 25 = 61
+odd: 36 + 49 = 85
+odd: 49 + 4 = 53
+odd: 49 + 16 = 65
+odd: 49 + 36 = 85
+Right [85, 65, 53, 85, 61, 45, 61, 41, 29, 65, 41, 25, 45, 25, 13, 53, 29, 13]
+Test> [(3, (4, 5)), (4, (3, 5)), (6, (8, 10)), (8, (6, 10))]
 Test> Bye for now!

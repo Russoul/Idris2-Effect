@@ -65,9 +65,13 @@ namespace Inj
 
   ||| Composition of injections.
   public export
-  [T] Inj siga sigb => Inj sigb sigc => Inj siga sigc where
+  [Trans] (inner : Inj siga sigb) => (outer : Inj sigb sigc) => Inj siga sigc where
     inj = inj {sub = sigb, sup = sigc}
         . inj {sub = siga, sup = sigb}
+
+  public export
+  T : (inner : Inj siga sigb) -> (outer : Inj sigb sigc) -> Inj siga sigc
+  T inner outer = Trans @{inner} @{outer}
 
   ||| Inject to a Sum from the left.
   public export
@@ -124,6 +128,9 @@ data Lift : (sig : (Type -> Type))
          -> ((Type -> Type) -> (Type -> Type)) where
   MkLift : sig (m a) -> Lift sig m a
 
+public export
+unlift : Lift sig m a -> sig (m a)
+unlift (MkLift x) = x
 
 ||| Alias for use as an effect.
 public export

@@ -2,9 +2,14 @@ module Control.Effect.Lift
 
 import Control.EffectAlgebra
 
-public export
-Monad m => Algebra (Lift m) m where
-  alg ctxx hdl (MkLift x) = x >>= hdl . ( <$ ctxx)
+namespace Algebra
+  public export
+  [Lift] Monad m => Algebra (Lift m) m where
+    alg ctxx hdl (MkLift x) = x >>= hdl . ( <$ ctxx)
+
+  %hint public export
+  HintLift : Monad m => Algebra (Lift m) m
+  HintLift = Lift
 
 public export
 lift : Monad n => Inj (Lift n) sig => Algebra sig m => n a -> m a

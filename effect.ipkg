@@ -9,6 +9,7 @@ modules = Control.EffectAlgebra
         , Control.HigherOrder
 
         , Control.Monad.Free
+        , Control.Monad.List
 
         , Control.Cont.Exception
         , Control.Cont.IO
@@ -24,5 +25,6 @@ modules = Control.EffectAlgebra
         , Control.Effect.Reader
         , Control.Effect.Writer
         , Control.Effect.State
+        , Control.Effect.NonDet
 
 sourcedir = "src"

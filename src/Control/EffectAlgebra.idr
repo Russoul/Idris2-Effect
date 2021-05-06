@@ -5,6 +5,7 @@ import public Control.Effect.Misc
 
 public export
 interface Monad m => Algebra sig m where
+  constructor MkAlgebra
   alg : (f : Functor ctx)
      => ctx ()
      -> Handler ctx n m

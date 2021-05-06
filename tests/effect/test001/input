@@ -7,4 +7,10 @@ runEitherE True
 runReaderSum
 :exec runTestWriterIO
 runIncr
+runTooBig
+runTooBig'
+runTooBigCatch
+runTooBigCatch'
+:exec runExceptionStateListPrint
+runPythag
 :q

@@ -29,7 +29,12 @@ runVoidC : Free VoidC a -> a
 runVoidC (Return x) = x
 runVoidC (Op (MkLift x)) = absurd x
 
-public export
-Monad m => Algebra VoidE m where
-  alg ctx hdl (MkLift x) = absurd x
+namespace Algebra
+  public export
+  [VoidE] (mon : Monad m) => Algebra VoidE m where
+    alg ctx hdl (MkLift x) = absurd x
 
+  %hint
+  public export
+  AlgebraVoidE : (mon : Monad m) => Algebra VoidE m
+  AlgebraVoidE = Algebra.VoidE

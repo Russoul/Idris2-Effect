@@ -45,8 +45,12 @@ interface InjL (0 label : k)
   injLabelled : Labelled label sub m a -> sup m a
 
 public export
-[Label] Inj sub sup => InjL label sub sup where
+[LabelAuto] Inj sub sup => InjL label sub sup where
   injLabelled (MkLabelled x) = inj x
+
+public export
+Label : Inj sub sup -> InjL label sub sup
+Label x = LabelAuto @{x}
 
 public export
 labelled : (label : k)

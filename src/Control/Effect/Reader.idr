@@ -13,9 +13,14 @@ public export
 ask : Inj (ReaderE r) sig => Algebra sig m => m r
 ask = send {sig} {eff = ReaderE r} Ask
 
-||| Apply the reader effect of the signature to the underlying monad,
-||| resulting in the ReaderT transformer.
-public export
-Algebra sig m => Algebra (ReaderE s :+: sig) (ReaderT s m) where
-  alg ctx hdl (Inl Ask) = MkReaderT \s => pure (s <$ ctx)
-  alg ctx hdl (Inr x) = MkReaderT \r => alg ctx (runReaderT r . hdl) x
+namespace Algebra
+  ||| Apply the reader effect of the signature to the underlying monad,
+  ||| resulting in the ReaderT transformer.
+  public export
+  [Reader] (al : Algebra sig m) => Algebra (ReaderE s :+: sig) (ReaderT s m) where
+    alg ctx hdl (Inl Ask) = MkReaderT \s => pure (s <$ ctx)
+    alg ctx hdl (Inr x) = MkReaderT \r => alg ctx (runReaderT r . hdl) x
+
+  %hint public export
+  HintReader : (al : Algebra sig m) => Algebra (ReaderE s :+: sig) (ReaderT s m)
+  HintReader = Reader

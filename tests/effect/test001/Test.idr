@@ -6,12 +6,14 @@ import Data.Either
 import Data.Maybe
 import Data.String
 import Data.Ref
+import Data.Stream
 import Control.Monad.Reader
 import Control.Monad.Writer
 import Control.Monad.Either
 import Control.Monad.Identity
 import Control.Monad.Free
 import Control.Monad.State
+import Control.Monad.List
 
 import Control.EffectAlgebra
 import Control.Effect.Exception
@@ -20,6 +22,7 @@ import Control.Effect.Lift
 import Control.Effect.Reader
 import Control.Effect.Writer
 import Control.Effect.State
+import Control.Effect.NonDet
 import Control.Cont.Void
 import Control.Cont.State
 import Control.Cont.Thread
@@ -54,7 +57,7 @@ testStateExc = do
 
 testStateExcRun : Either (String, Int) (Int, (String, Int))
 testStateExcRun = runVoidC . runEitherC . runStateC 3 $ testStateExc
-  {e = T @{L} @{R}}
+  {e = T L R}
   {s = L}
 
 -------------------------------------
@@ -83,31 +86,29 @@ runGlobal = runVoidC . runStateC 2 . runEitherC $ tripleDecrInst'
 %hide Control.Monad.Writer.Interface.tell
 %hide Control.Monad.Reader.Interface.ask
 
-testFused : (a : Algebra sig m)
-      => (r : Inj (ReaderE Nat) sig)
-      => (w : Inj (WriterE (List Nat)) sig)
-      => m String
+testFused : (al : Algebra sig m)
+         => (r : Inj (ReaderE Nat) sig)
+         => (w : Inj (WriterE (List Nat)) sig)
+         => m String
 testFused = do
   x <- ask {r = Nat}
   tell {w = List Nat} [x + 1]
   tell {w = List Nat} [x + 3, x + 2]
   pure "Done"
 
-%hint
-MyWriter : Monoid s => Algebra sig m => Algebra (WriterE s :+: sig) (WriterT s m)
-MyWriter = ConcatLeft
-
 handleFused : ReaderT Nat (WriterT (List Nat) Identity) String
 handleFused = testFused {sig = ReaderE Nat :+: WriterE (List Nat) :+: VoidE}
                {r = L}
-               {w = T @{L} @{R}}
+               {w = T L R}
+               {al = Reader.Algebra.Reader
+                      @{Writer.Algebra.ConcatLeft}}
 
 runFused : List Nat
 runFused = runIdentity . map snd . runWriterT . runReaderT 20 $ handleFused
 
 -----------------------
 
-testEitherE : (a : Algebra sig m)
+testEitherE : (al : Algebra sig m)
            => (r : Inj (ReaderE Nat) sig)
            => (w : Inj (WriterE (List Nat)) sig)
            => (e : Inj (EitherE String) sig)
@@ -124,10 +125,12 @@ testEitherE toThrow = do
   pure r
 
 handleEitherE : Bool -> (WriterT (List Nat) $ ReaderT Nat $ EitherT String Identity) String
-handleEitherE x = testEitherE x {sig = WriterE (List Nat) :+: ReaderE Nat :+: EitherE String :+: VoidE}
-                  {w = L}
-                  {r = T @{L} @{R}}
-                  {e = T @{T @{L} @{R}} @{R}}
+handleEitherE x = testEitherE x
+  {sig = WriterE (List Nat) :+: ReaderE Nat :+: EitherE String :+: VoidE}
+  {w = L}
+  {r = T L R}
+  {e = T (T L R) R}
+  {al = Algebra.ConcatLeft @{%search} @{Algebra.Reader @{Algebra.Either}}}
 
 runEitherE : Bool -> Either String (String, List Nat)
 runEitherE x = runIdentity . runEitherT . runReaderT 0 . runWriterT $ handleEitherE x
@@ -147,9 +150,9 @@ runReaderSum : Int
 runReaderSum =
   runIdentity . runReaderT 1 . runReaderT 2 $ readerSum
   {sig = ReaderE Int :+: ReaderE Int :+: VoidE}
-  {rx = Label @{L}}
-  {ry = Label @{T @{L} @{R}}}
-  {al = the (Algebra _ $ ReaderT Int (ReaderT Int Identity)) %search}
+  {rx = Label L}
+  {ry = Label (T L R)}
+  {al = Reader @{Reader}}
 
 -----------------------
 
@@ -166,7 +169,7 @@ runTestWriterIO = runReaderT 2 $ testWriterIO
   {sig = ReaderE Int :+: Lift IO}
   {r = L}
   {io = R}
-  {al = the (Algebra _ $ ReaderT Int IO) %search}
+  {al = Reader}
 
 -----------------------
 
@@ -181,7 +184,142 @@ runIncr : Int
 runIncr = runIdentity . map fst . runStateT 0 $ incrE
   {sig = StateE Int :+: VoidE}
   {s = L}
-  {al = the (Algebra _ $ StateT Int Identity) %search}
+  {al = State}
+
+-----------------------
+
+standaloneList : (l : Inj Choice sig)
+              => (al : Algebra sig m)
+              => m (Int, Int)
+standaloneList = do
+  x <- oneOf ([1, 2, 3, 4])
+  y <- oneOf ([5, 6, 7, 8])
+  pure (x, y)
+
+runStandaloneList : List (Int, Int)
+runStandaloneList = runIdentity . runListT $ standaloneList
+  {sig = Choice :+: VoidC}
+  {l = L}
+  {al = Algebra.Concat}
+
+-----------------------
+
+%hide Trans.lift
+
+tooBig : (l : Inj Choice sig)
+      => (e : Inj (EitherE Int) sig)
+      => (al : Algebra sig m)
+      => List Int
+      -> m Int
+tooBig list = do
+  v <- oneOf list
+  if v > 5 then fail {e = Int} v else pure v
+
+tooBigCatch : (l : Inj Choice sig)
+           => (e : Inj (EitherE Int) sig)
+           => (al : Algebra sig m)
+           => List Int
+           -> m Int
+tooBigCatch list = do
+  v <- oneOf list
+  try (if v > the Int 5 then fail {e = Int} v else pure v)
+   \v => if v > the Int 7 then fail {e = Int} v else pure v
+
+runTooBig : ?
+runTooBig = runIdentity . runListT' . runEitherT $ tooBig [5, 7, 1]
+ {sig = EitherE Int :+: Choice :+: VoidE}
+ {e = L}
+ {l = T L R}
+ {al = Algebra.Either @{Algebra.Concat}}
+
+runTooBig' : ?
+runTooBig' = runIdentity . runEitherT . runListT $ tooBig [5, 7, 1]
+ {sig =  Choice :+: EitherE Int :+: VoidE}
+ {l = L}
+ {e = T L R}
+ {al = Algebra.Concat @{Algebra.Either}}
+
+runTooBigCatch : ?
+runTooBigCatch = runIdentity . runListT . runEitherT $ tooBigCatch [5, 7, 1]
+ {sig = EitherE Int :+: Choice :+: VoidE}
+ {e = L}
+ {l = T L R}
+ {al = Algebra.Either @{Algebra.Concat}}
+
+runTooBigCatch' : ?
+runTooBigCatch' = runIdentity . runEitherT . runListT $ tooBigCatch [5, 7, 1]
+ {sig =  Choice :+: EitherE Int :+: VoidE}
+ {l = L}
+ {e = T L R}
+ {al = Algebra.Concat @{Algebra.Either}}
+
+-----------------------
+
+||| Generate squares up to n.
+||| For every pair of squares, write its sum
+||| to the context only if the sum is odd.
+||| We test the system by performing the writes all the time
+||| inside a `try` block. But if a sum is even we fail inside that block.
+||| The system handles backtracking of state for us.
+||| We also print intermediate results to console.
+exceptionStateListPrint :
+     (l : Inj Choice sig)
+  => (r : Inj (ReaderE Int) sig)
+  => (w : Inj (WriterE (List Int)) sig)
+  => (e : Inj (EitherE String) sig)
+  => (io : Inj (LiftE IO) sig)
+  => (al : Algebra sig m)
+  => m ()
+exceptionStateListPrint = do
+  n <- ask {r = Int}
+  let gen = oneOf (takeBefore (> n) $ map (\x => x * x) [2..])
+  x <- gen
+  y <- gen
+  try {e = String}
+    (do tell {w = List Int} [x + y]
+        if (x + y) `mod` 2 == 0
+           then
+             fail {e = String} "even"
+           else do
+             lift {n = IO} (putStrLn "odd: \{show x} + \{show y} = \{show (x + y)}"))
+    (\_ => pure ())
+
+
+runExceptionStateListPrint : IO ()
+runExceptionStateListPrint = do
+  res <- runEitherT . runWriterT . runListT . runReaderT 50 $ exceptionStateListPrint
+   {sig = ReaderE Int :+: Choice :+: WriterE (List Int) :+: EitherE String :+: Lift IO}
+   {r = L}
+   {l = T L R}
+   {w = T (T L R) R}
+   {e = T (T (T L R) R) R}
+   {io = T (T (T R R) R) R}
+   {al = Algebra.Reader
+          @{Algebra.Concat
+            @{Algebra.ConcatLeft
+              @{%search}
+              @{Algebra.Either}}}}
+  printLn (map snd res)
+
+-----------------------
+
+pythag : (l : Inj Choice sig)
+      => (al : Algebra sig m)
+      => (alt : Alternative m)
+      => m (Int, Int, Int)
+pythag = do
+  a <- oneOf [1..10]
+  b <- oneOf [1..10]
+  c <- oneOf [1..10]
+  guard (a * a + b * b == c * c)
+  pure (a, b, c)
+
+runPythag : ?
+runPythag = runIdentity . runListT $ pythag
+  {sig = Choice :+: VoidC}
+  {l = L}
+  {al = Algebra.Concat @{Algebra.VoidE}}
+  {alt = ListT}
 
 -----------------------
 
