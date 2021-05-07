@@ -14,12 +14,20 @@ StateE : Type -> (Type -> Type) -> (Type -> Type)
 StateE s = ReaderE s :+: WriterE s
 
 public export
-get : Algebra sig m => Inj (StateE s) sig => m s
-get = send {sig} {eff = StateE s} (Inl Ask)
+Inj (StateE s) sig => Inj (ReaderE s) sig where
+  inj = inj {sub = StateE s, sup = sig} . Inl
 
 public export
-put : Algebra sig m => Inj (StateE s) sig => s -> m ()
-put x = send {sig} {eff = StateE s} (Inr (Tell x))
+Inj (StateE s) sig => Inj (WriterE s) sig where
+  inj = inj {sub = StateE s, sup = sig} . Inr
+
+-- public export
+-- get : Algebra sig m => Inj (StateE s) sig => m s
+-- get = send {sig} {eff = StateE s} (Inl Ask)
+
+-- public export
+-- put : Algebra sig m => Inj (StateE s) sig => s -> m ()
+-- put x = send {sig} {eff = StateE s} (Inr (Tell x))
 
 namespace Algebra
   public export

@@ -120,7 +120,7 @@ testEitherE toThrow = do
   tell {w = List Nat} [3, 2]
   r <- try {e = String}
         (do tell {w = List Nat} [6, 5, 4]
-            if toThrow then fail "fail" else pure "pure")
+            if toThrow then fail {sig} "fail" else pure "pure")
     (\er => pure "on throw")
   pure r
 
@@ -177,8 +177,8 @@ incrE : (s : Inj (StateE Int) sig)
      => (al : Algebra sig m)
      => m ()
 incrE = do
-  x <- Effect.State.get {s = Int}
-  Effect.State.put (x + 1)
+  x <- ask {sig} {r = Int}
+  tell {sig} (x + 1)
 
 runIncr : Int
 runIncr = runIdentity . map fst . runStateT 0 $ incrE
@@ -213,7 +213,7 @@ tooBig : (l : Inj ChoiceE sig)
       -> m Int
 tooBig list = do
   v <- oneOf list
-  if v > 5 then fail {e = Int} v else pure v
+  if v > 5 then fail {sig} {e = Int} v else pure v
 
 tooBigCatch : (l : Inj ChoiceE sig)
            => (e : Inj (EitherE Int) sig)
@@ -222,8 +222,8 @@ tooBigCatch : (l : Inj ChoiceE sig)
            -> m Int
 tooBigCatch list = do
   v <- oneOf list
-  try (if v > the Int 5 then fail {e = Int} v else pure v)
-   \v => if v > the Int 7 then fail {e = Int} v else pure v
+  try (if v > the Int 5 then fail {sig} {e = Int} v else pure v)
+   \v => if v > the Int 7 then fail {sig} {e = Int} v else pure v
 
 runTooBig : ?
 runTooBig = runIdentity . runListT' . runEitherT $ tooBig [5, 7, 1]
@@ -279,7 +279,7 @@ exceptionStateListPrint = do
     (do tell {w = List Int} [x + y]
         if (x + y) `mod` 2 == 0
            then
-             fail {e = String} "even"
+             fail {sig} {e = String} "even"
            else do
              lift {n = IO} (putStrLn "odd: \{show x} + \{show y} = \{show (x + y)}"))
     (\_ => pure ())

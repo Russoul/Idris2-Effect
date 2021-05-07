@@ -1,3 +1,4 @@
+:colour off
 testStateExcRun
 runLocal
 runGlobal

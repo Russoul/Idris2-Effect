@@ -19,12 +19,13 @@ modules = Control.EffectAlgebra
         , Control.Cont.Void
 
         , Control.Effect.Exception
+        , Control.Effect.Fail
         , Control.Effect.Labelled
         , Control.Effect.Lift
         , Control.Effect.Misc
-        , Control.Effect.Reader
-        , Control.Effect.Writer
-        , Control.Effect.State
         , Control.Effect.NonDet
+        , Control.Effect.Reader
+        , Control.Effect.State
+        , Control.Effect.Writer
 
 sourcedir = "src"

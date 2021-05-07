@@ -56,3 +56,12 @@ oneOf : Inj ChoiceE sig
      -> m a
 oneOf list =
   send {eff = ChoiceE} (Choose (map pure list))
+
+||| Introduce non-deterministic branching to a computation.
+public export
+oneOfM : Inj ChoiceE sig
+     => Algebra sig m
+     => List (m a)
+     -> m a
+oneOfM list =
+  send {eff = ChoiceE} (Choose list)
