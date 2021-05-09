@@ -1,0 +1,13 @@
+1/1: Building Parser (Parser.idr)
+Parser> Set color off
+Parser> [Right (['b'], ['A', 'A'])]
+Parser> [Right (['b', 'A', 'A'], [])]
+Parser> Right [([], ['h', 'e', 'l', 'l', 'o'])]
+Parser> Right [(['2', '2'], ['h', 'e', 'l', 'l', 'o'])]
+Parser> Left "Expected 'e'"
+Parser> [Right (['1'], ['h', 'e', 'l', 'l', 'o']), Left "Expected 'i'"]
+Parser> [Left "Expected 'e'", Right (['2'], ['h', 'i'])]
+Parser> [Left "End of input", Left "Expected 'i'"]
+Parser> [Left "Expected 'h'", Left "Expected 'h'"]
+Parser> [3, 13, 34]
+Parser> Bye for now!

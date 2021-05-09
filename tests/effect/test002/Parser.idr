@@ -1,4 +1,4 @@
-module Example.Parser
+module Parser
 
 import Data.List
 import Data.Either

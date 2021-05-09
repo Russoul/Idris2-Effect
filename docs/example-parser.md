@@ -291,4 +291,4 @@ The great thing about them is universality and composability.
 As long as a program's signature states that it supports a subset of effects `X`, among others,
   it can freely and painlessly call any other effectful function of signature `X`.
 
-The full code from the document is available in `src/Example/Parser.idr`
+The full code from the document is available in [`/tests/effect/test002/Parser.idr`](/tests/effect/test002/Parser.idr)

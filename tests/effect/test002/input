@@ -1,0 +1,12 @@
+:colour off
+runParser1 "AAb"
+runParser1 "bAA"
+runParser2 "hello"
+runParser2 "hello22"
+runParser2 "hi"
+runParser3 "hello1"
+runParser3 "hi2"
+runParser3 "hell"
+runParser3 " hi"
+runParser4 "cat" "My cat ate a caterpillar from the catalog."
+:q

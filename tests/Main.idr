@@ -6,7 +6,7 @@ import Test.Golden
 
 allTests : TestPool
 allTests = MkTestPool []
-  [ "test001"
+  [ "test001", "test002"
   ]
 
 main : IO ()

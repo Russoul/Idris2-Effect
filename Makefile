@@ -19,6 +19,9 @@ copy-ttc-for-test:
 	rm -rf ./tests/effect/test001/depends/*
 	mkdir -p ./tests/effect/test001/depends/effect-${MAJOR}.${MINOR}.${PATCH}
 	cp -R ./build/ttc/* ./tests/effect/test001/depends/effect-${MAJOR}.${MINOR}.${PATCH}/
+	rm -rf ./tests/effect/test002/depends/*
+	mkdir -p ./tests/effect/test002/depends/effect-${MAJOR}.${MINOR}.${PATCH}
+	cp -R ./build/ttc/* ./tests/effect/test002/depends/effect-${MAJOR}.${MINOR}.${PATCH}/
 
 test: copy-ttc-for-test
 	${MAKE} -C ./tests test

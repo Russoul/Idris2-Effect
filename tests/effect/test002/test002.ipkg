@@ -1,0 +1,5 @@
+package test001
+
+depends = effect
+modules = Parser
+

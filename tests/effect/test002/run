@@ -1,0 +1,3 @@
+idris2 --repl test002.ipkg < input
+rm -rf depends
+rm -rf build
