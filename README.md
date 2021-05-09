@@ -1,7 +1,7 @@
 # Idris2-Effect
 Experimental effects library for Idris 2
 
-**Minimal Idris2 version (by commit) required to build the library:** [9b99aba992f0b8004eac006e4218e7f3f8203960](https://github.com/idris-lang/Idris2/tree/9b99aba992f0b8004eac006e4218e7f3f8203960)
+**Minimal Idris2 version (by commit) required to build the library:** [Idris2-0.3.0-9b99aba](https://github.com/idris-lang/Idris2/tree/9b99aba992f0b8004eac006e4218e7f3f8203960)
 
 For an introduction, see [writing a parser via effects](/docs/example-parser.md)
 
