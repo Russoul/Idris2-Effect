@@ -1,8 +1,6 @@
 # Idris2-Effect
 Experimental effects library for Idris 2
 
-Depends on an unmerged patch: https://github.com/idris-lang/Idris2/pull/1386
-
 For an introduction, see [writing a parser via effects](/docs/example-parser.md)
 
 The effect system is based on the following work:
