@@ -7,9 +7,13 @@ import Control.Monad.Writer
 ||| Writer effect.
 public export
 data WriterE : Type -> (Type -> Type) -> Type -> Type where
-  Tell : s -> WriterE s m ()
+  Tell : w -> WriterE w m ()
 
-||| Write the value to the context within a monadic context that supports it.
+export
+Functor (\w => WriterE w m a) where
+  map f (Tell x) = Tell (f x)
+
+||| Write the value to the context within a monadic computation that supports it.
 public export
 tell : Inj (WriterE w) sig => Algebra sig m => w -> m ()
 tell s = send {sig} {eff = WriterE w} (Tell s)

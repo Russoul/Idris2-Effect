@@ -24,11 +24,6 @@ public export
 try : Inj (EitherE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
 try x err = send {sig} {eff = EitherE e} (Inl (Try x err))
 
-public export
-fromEither : Inj (EitherE e) sig => Algebra sig m => Either e b -> m b
-fromEither (Left err) = fail {sig} err
-fromEither (Right x) = pure x
-
 namespace Algebra
   public export
   [Either] (al : Algebra sig m) => Algebra (EitherE e :+: sig) (EitherT e m) where

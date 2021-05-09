@@ -7,10 +7,19 @@ public export
 data FailE : Type -> (Type -> Type) -> (Type -> Type) where
   Fail : e -> FailE e m a
 
+export
+Functor (\e => FailE e m a) where
+  map f (Fail x) = Fail (f x)
+
 ||| Fail a computation.
 public export
 fail : Inj (FailE e) sig => Algebra sig m => e -> m a
 fail x = send {sig} {eff = FailE e} (Fail x)
+
+public export
+fromEither : Inj (FailE e) sig => Algebra sig m => Either e b -> m b
+fromEither (Left err) = fail {sig} err
+fromEither (Right x) = pure x
 
 public export
 Algebra sig m => Algebra (FailE e :+: sig) (MaybeT m) where

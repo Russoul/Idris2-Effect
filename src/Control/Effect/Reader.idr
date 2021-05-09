@@ -7,7 +7,11 @@ import Control.Monad.Reader
 ||| Reader effect.
 public export
 data ReaderE : Type -> (Type -> Type) -> Type -> Type where
-  Ask : ReaderE s m s
+  Ask : ReaderE r m r
+
+export
+Functor (\r => ReaderE r m r) where
+  map _ Ask = Ask
 
 ||| Read the value within a monadic context that supports it.
 public export
