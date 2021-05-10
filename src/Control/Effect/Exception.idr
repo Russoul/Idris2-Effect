@@ -1,5 +1,7 @@
 module Control.Effect.Exception
 
+import Data.Contravariant
+
 import Control.EffectAlgebra
 
 import public Control.Effect.Fail
@@ -10,6 +12,10 @@ import Control.Monad.Either
 public export
 data TryE : Type -> (Type -> Type) -> Type -> Type where
   Try : m a -> (e -> m a) -> TryE e m a
+
+public export
+Contravariant (\e => TryE e m r) where
+  contramap f (Try x h) = Try x (h . f)
 
 public export
 EitherE : Type -> (Type -> Type) -> Type -> Type
