@@ -25,10 +25,14 @@ public export
 Inj (EitherE e) sig => Inj (FailE e) sig where
   inj = inj {sub = EitherE e, sup = sig} . Inr
 
+public export
+Inj (EitherE e) sig => Inj (TryE e) sig where
+  inj = inj {sub = EitherE e, sup = sig} . Inl
+
 ||| Try running a computation. If it fails (via Fail) resort to the supplied callback.
 public export
-try : Inj (EitherE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
-try x err = send {sig} {eff = EitherE e} (Inl (Try x err))
+try : Inj (TryE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
+try x err = send {sig} {eff = TryE e} (Try x err)
 
 namespace Algebra
   public export

@@ -118,7 +118,7 @@ testEitherE toThrow = do
   x <- ask {r = Nat}
   tell {w = List Nat} [1, x]
   tell {w = List Nat} [3, 2]
-  r <- try {e = String}
+  r <- try {sig} {e = String}
         (do tell {w = List Nat} [6, 5, 4]
             if toThrow then fail {sig} "fail" else pure "pure")
     (\er => pure "on throw")
@@ -222,7 +222,7 @@ tooBigCatch : (l : Inj ChoiceE sig)
            -> m Int
 tooBigCatch list = do
   v <- oneOf list
-  try (if v > the Int 5 then fail {sig} {e = Int} v else pure v)
+  try {sig} (if v > the Int 5 then fail {sig} {e = Int} v else pure v)
    \v => if v > the Int 7 then fail {sig} {e = Int} v else pure v
 
 runTooBig : ?
@@ -275,7 +275,7 @@ exceptionStateListPrint = do
   let gen = oneOf (takeBefore (> n) $ map (\x => x * x) [2..])
   x <- gen
   y <- gen
-  try {e = String}
+  try {sig} {e = String}
     (do tell {w = List Int} [x + y]
         if (x + y) `mod` 2 == 0
            then
