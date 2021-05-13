@@ -32,7 +32,7 @@ Inj (EitherE e) sig => Inj (TryE e) sig where
 ||| Try running a computation. If it fails (via Fail) resort to the supplied callback.
 public export
 try : Inj (TryE e) sig => Algebra sig m => m a -> (e -> m a) -> m a
-try x err = send {sig} {eff = TryE e} (Try x err)
+try x err = send (Try x err)
 
 namespace Algebra
   public export

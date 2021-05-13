@@ -16,7 +16,7 @@ Functor (\w => WriterE w m a) where
 ||| Write the value to the context within a monadic computation that supports it.
 public export
 tell : Inj (WriterE w) sig => Algebra sig m => w -> m ()
-tell s = send {sig} {eff = WriterE w} (Tell s)
+tell s = send (Tell s)
 
 namespace Algebra
   ||| Successive writes overwrite the preceding state.

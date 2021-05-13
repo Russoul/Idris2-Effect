@@ -15,11 +15,11 @@ Functor (\e => FailE e m a) where
 ||| Fail a computation.
 public export
 fail : Inj (FailE e) sig => Algebra sig m => e -> m a
-fail x = send {sig} {eff = FailE e} (Fail x)
+fail x = send (Fail x)
 
 public export
 fromEither : Inj (FailE e) sig => Algebra sig m => Either e b -> m b
-fromEither (Left err) = fail {sig} err
+fromEither (Left err) = fail err
 fromEither (Right x) = pure x
 
 ||| Given a transformation between two failure types `e'` and `e`,
@@ -35,7 +35,7 @@ glueFail : {0 m : Type -> Type}
 glueFail morph act = act @{f}
  where
   f : Inj (FailE e') sig
-  f = MkInj \case Fail x => inj @{fail} (Fail (morph x))
+  f = MkInj \case Fail x => inj (Fail (morph x))
 
 namespace Algebra
   public export

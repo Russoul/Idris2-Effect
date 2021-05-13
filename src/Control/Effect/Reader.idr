@@ -16,7 +16,7 @@ Functor (\r => ReaderE r m r) where
 ||| Read the value within a monadic context that supports it.
 public export
 ask : Inj (ReaderE r) sig => Algebra sig m => m r
-ask = send {sig} {eff = ReaderE r} Ask
+ask = send Ask
 
 namespace Algebra
   ||| Apply the reader effect of the signature to the underlying monad,

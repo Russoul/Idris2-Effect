@@ -55,7 +55,7 @@ oneOf : Inj ChoiceE sig
      => List a
      -> m a
 oneOf list =
-  send {eff = ChoiceE} (Choose (map pure list))
+  send (Choose (map pure list))
 
 ||| Introduce non-deterministic branching to a computation.
 public export
@@ -64,4 +64,4 @@ oneOfM : Inj ChoiceE sig
      => List (m a)
      -> m a
 oneOfM list =
-  send {eff = ChoiceE} (Choose list)
+  send (Choose list)

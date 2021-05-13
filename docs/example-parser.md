@@ -76,9 +76,9 @@ nextChar : (r : Inj (StateE (List Char)) sig)
         => (a : Algebra sig m)
         => m Char
 nextChar = do
-  c :: rest <- ask {sig} {r = List Char}
+  c :: rest <- ask {r = List Char}
     | [] => fail {a = Char} "End of input"
-  tell {sig} {w = List Char} rest
+  tell {w = List Char} rest
   pure c
 ```
 
@@ -125,7 +125,7 @@ parseChar : (e : Inj (FailE String) sig)
          -> m Char
 parseChar pred err = do
   c <- nextChar
-  guardFail {sig} (pred c) err
+  guardFail (pred c) err
   pure c
 ```
 
@@ -154,7 +154,7 @@ Another useful combinator:
 ```idris
 parseMany : m t -> Parser sig m (List t)
 parseMany p = do
-  Just x <- try {e = String} {sig} (map Just p) (\_ => pure Nothing)
+  Just x <- try {e = String} (map Just p) (\_ => pure Nothing)
     | _ => pure []
   map (x ::) (parseMany p)
 ```
@@ -226,7 +226,7 @@ The results are grouped back into a list.
 ```idris
 parseString : String -> Parser sig m (List Char)
 parseString x =
-  parseAll (map (\x => parseChar {sig} (x ==) "Expected \{show x}") (unpack x))
+  parseAll (map (\x => parseChar (x ==) "Expected \{show x}") (unpack x))
 ```
 
 A function that makes use of `parseAll` to parse a string.

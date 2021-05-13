@@ -91,7 +91,7 @@ testFused : (al : Algebra sig m)
          => (w : Inj (WriterE (List Nat)) sig)
          => m String
 testFused = do
-  x <- ask {r = Nat}
+  x <- ask
   tell {w = List Nat} [x + 1]
   tell {w = List Nat} [x + 3, x + 2]
   pure "Done"
@@ -115,12 +115,12 @@ testEitherE : (al : Algebra sig m)
            => (toThrow : Bool)
            -> m String
 testEitherE toThrow = do
-  x <- ask {r = Nat}
+  x <- ask
   tell {w = List Nat} [1, x]
   tell {w = List Nat} [3, 2]
-  r <- try {sig} {e = String}
+  r <- try {e = String}
         (do tell {w = List Nat} [6, 5, 4]
-            if toThrow then fail {sig} "fail" else pure "pure")
+            if toThrow then fail "fail" else pure "pure")
     (\er => pure "on throw")
   pure r
 
@@ -177,8 +177,8 @@ incrE : (s : Inj (StateE Int) sig)
      => (al : Algebra sig m)
      => m ()
 incrE = do
-  x <- ask {sig} {r = Int}
-  tell {sig} (x + 1)
+  x <- ask {r = Int}
+  tell (x + 1)
 
 runIncr : Int
 runIncr = runIdentity . map fst . runStateT 0 $ incrE
@@ -192,8 +192,8 @@ standaloneList : (l : Inj ChoiceE sig)
               => (al : Algebra sig m)
               => m (Int, Int)
 standaloneList = do
-  x <- oneOf ([1, 2, 3, 4])
-  y <- oneOf ([5, 6, 7, 8])
+  x <- oneOf [1, 2, 3, 4]
+  y <- oneOf [5, 6, 7, 8]
   pure (x, y)
 
 runStandaloneList : List (Int, Int)
@@ -213,7 +213,7 @@ tooBig : (l : Inj ChoiceE sig)
       -> m Int
 tooBig list = do
   v <- oneOf list
-  if v > 5 then fail {sig} {e = Int} v else pure v
+  if v > 5 then fail {e = Int} v else pure v
 
 tooBigCatch : (l : Inj ChoiceE sig)
            => (e : Inj (EitherE Int) sig)
@@ -222,8 +222,8 @@ tooBigCatch : (l : Inj ChoiceE sig)
            -> m Int
 tooBigCatch list = do
   v <- oneOf list
-  try {sig} (if v > the Int 5 then fail {sig} {e = Int} v else pure v)
-   \v => if v > the Int 7 then fail {sig} {e = Int} v else pure v
+  try (if v > 5 then fail v else pure v)
+   \v => if v > the Int 7 then fail v else pure v
 
 runTooBig : ?
 runTooBig = runIdentity . runListT' . runEitherT $ tooBig [5, 7, 1]
@@ -271,15 +271,15 @@ exceptionStateListPrint :
   => (al : Algebra sig m)
   => m ()
 exceptionStateListPrint = do
-  n <- ask {r = Int}
+  n <- ask
   let gen = oneOf (takeBefore (> n) $ map (\x => x * x) [2..])
   x <- gen
   y <- gen
-  try {sig} {e = String}
+  try {e = String}
     (do tell {w = List Int} [x + y]
         if (x + y) `mod` 2 == 0
            then
-             fail {sig} {e = String} "even"
+             fail "even"
            else do
              lift {n = IO} (putStrLn "odd: \{show x} + \{show y} = \{show (x + y)}"))
     (\_ => pure ())

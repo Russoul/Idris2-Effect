@@ -22,9 +22,9 @@ nextChar : (r : Inj (StateE (List Char)) sig)
         => (a : Algebra sig m)
         => m Char
 nextChar = do
-  c :: rest <- ask {sig} {r = List Char}
-    | [] => fail {a = Char} "End of input"
-  tell {sig} {w = List Char} rest
+  c :: rest <- ask {r = List Char}
+    | [] => fail "End of input"
+  tell rest
   pure c
 
 guardFail : (f : Inj (FailE e) sig)
@@ -43,7 +43,7 @@ parseChar : (e : Inj (FailE String) sig)
          -> m Char
 parseChar pred err = do
   c <- nextChar
-  guardFail {sig} (pred c) err
+  guardFail (pred c) err
   pure c
 
 Parser : (sig : (Type -> Type) -> (Type -> Type)) -> (m : Type -> Type) -> Type -> Type
@@ -55,7 +55,7 @@ Parser sig m res = (e : Inj (EitherE String) sig)
 
 parseMany : m t -> Parser sig m (List t)
 parseMany p = do
-  Just x <- try {e = String} {sig} (map Just p) (\_ => pure Nothing)
+  Just x <- try {e = String} (map Just p) (\_ => pure Nothing)
     | _ => pure []
   map (x ::) (parseMany p)
 
@@ -77,7 +77,7 @@ parseAll (x :: xs) = map (::) x <*> parseAll xs
 
 parseString : String -> Parser sig m (List Char)
 parseString x =
-  parseAll (map (\x => parseChar {sig} (x ==) "Expected \{show x}") (unpack x))
+  parseAll (map (\x => parseChar (x ==) "Expected \{show x}") (unpack x))
 
 testParser2 : Parser sig m (List Char)
 testParser2 = parseString "hello"

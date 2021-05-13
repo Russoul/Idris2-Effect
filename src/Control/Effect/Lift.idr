@@ -14,4 +14,4 @@ namespace Algebra
 ||| Lift a computation to the underlying effect stack.
 public export
 lift : Monad n => Inj (Lift n) sig => Algebra sig m => n a -> m a
-lift x = send {eff = Lift n} {sig} $ MkLift (map pure x)
+lift x = send {eff = Lift n} $ MkLift (map pure x)
