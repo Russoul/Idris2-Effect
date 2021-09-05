@@ -32,9 +32,8 @@ build:
 install:
 	idris2 --install effect.ipkg
 
-install-src:
-	mkdir -p ${PREFIX}/${IDRIS_NAME_VERSION}-src
-	cp -R src/* ${PREFIX}/${IDRIS_NAME_VERSION}-src/
+install-with-src:
+	idris2 --install-with-src effect.ipkg
 
 clean:
 	$(RM) -rf build

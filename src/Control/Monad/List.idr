@@ -60,7 +60,7 @@ namespace Applicative
   ListT : Monad m => Applicative (ListT m)
   ListT = MkApplicative @{Functor.ListT}
     (pure . (:: pure Nil))
-
+    $
     \fs, ys =>
       case !fs of
         [] => pure []

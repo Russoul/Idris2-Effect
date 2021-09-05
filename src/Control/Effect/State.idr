@@ -33,10 +33,10 @@ namespace Algebra
   public export
   [State] Algebra sig m => Algebra (StateE s :+: sig) (StateT s m) where
     alg ctxx hdl (Inl (Inl Ask)) =
-      ST \s => pure {f = m} (s, (s <$ ctxx))
+      ST $ \s => pure {f = m} (s, (s <$ ctxx))
     alg ctxx hdl (Inl (Inr (Tell s))) =
-      ST \_ => pure {f = m} (s, ctxx)
-    alg ctxx hdl (Inr x) = ST \r => do
+      ST $ \_ => pure {f = m} (s, ctxx)
+    alg ctxx hdl (Inr x) = ST $ \r => do
      res <- alg
        {f = Functor.Compose}
        (r, ctxx) h x
