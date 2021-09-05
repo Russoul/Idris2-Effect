@@ -35,7 +35,7 @@ glueFail : {0 m : Type -> Type}
 glueFail morph act = act @{f}
  where
   f : Inj (FailE e') sig
-  f = MkInj \case Fail x => inj (Fail (morph x))
+  f = MkInj $ \case Fail x => inj (Fail (morph x))
 
 namespace Algebra
   public export
