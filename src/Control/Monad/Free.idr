@@ -23,7 +23,7 @@ Syntax sig => Applicative (Free sig) where
   Return v <*> prog = map v prog
   Op op    <*> prog = Op (emap (<*> prog) op)
 
-public export
+public export covering
 Syntax sig => Monad (Free sig) where
   Return v >>= prog = prog v
   Op op    >>= prog = Op (emap (>>= prog) op)
