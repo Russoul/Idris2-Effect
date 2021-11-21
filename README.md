@@ -1,6 +1,7 @@
 # Idris2-Effect
-Experimental effects library for Idris 2
 [![](https://github.com/Russoul/Idris2-Effect/workflows/Ubuntu/badge.svg)](https://github.com/Russoul/Idris2-Effect/actions?query=workflow%3A"Ubuntu")
+
+Experimental effects library for Idris 2
 <BR>Tested against [Idris 2, version 0.5.1-0bc18bd34](https://github.com/idris-lang/Idris2/tree/0bc18bd34a53824cafa5a72d7790ca380648636a)
 
 For an introduction, see [writing a parser via effects](/docs/example-parser.md)
