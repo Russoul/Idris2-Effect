@@ -5,7 +5,7 @@ import Test.Golden
 %default covering
 
 allTests : TestPool
-allTests = MkTestPool []
+allTests = MkTestPool "allTests" [] Default
   [ "test001", "test002"
   ]
 
