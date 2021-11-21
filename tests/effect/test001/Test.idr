@@ -52,7 +52,7 @@ testStateExc : Syntax sig
            => (e : Inj (EitherC (String, Int)) sig)
            => Free sig (String, Int)
 testStateExc = do
-  catch {e = (String, Int)} (incrC >> throwSnapshot {s = Int} "thrown") \(str, i) => do
+  catch {e = (String, Int)} (incrC >> throwSnapshot {s = Int} "thrown") $ \(str, i) => do
     incrC >> return (str ++ "-return", i + 22)
 
 testStateExcRun : Either (String, Int) (Int, (String, Int))
@@ -222,7 +222,7 @@ tooBigCatch : (l : Inj ChoiceE sig)
            -> m Int
 tooBigCatch list = do
   v <- oneOf list
-  try (if v > 5 then fail v else pure v)
+  try (if v > 5 then fail v else pure v) $
    \v => if v > the Int 7 then fail v else pure v
 
 runTooBig : ?
