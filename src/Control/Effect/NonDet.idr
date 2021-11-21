@@ -12,7 +12,7 @@ import Data.List1
 ||| deferred to a particular handler.
 public export
 data ChoiceE : (Type -> Type) -> (Type -> Type) where
-  Choose : List (m a) -> ChoiceE m a
+  Choose : List (Inf (m a)) -> ChoiceE m a
 
 namespace Algebra
   alg :   Algebra sig m
@@ -24,7 +24,7 @@ namespace Algebra
   alg ctxx hdl (Inl (Choose list)) =
     go list
    where
-    go : List (n a) -> ListT m (ctx a)
+    go : List (Inf (n a)) -> ListT m (ctx a)
     go [] = pure []
     go (x :: xs) = (<+>) @{ListT} (hdl (x <$ ctxx)) (go xs)
   alg ctxx hdl (Inr other) =
@@ -55,13 +55,13 @@ oneOf : Inj ChoiceE sig
      => List a
      -> m a
 oneOf list =
-  send (Choose (map pure list))
+  send (Choose (map (delay . pure) list))
 
 ||| Introduce non-deterministic branching to a computation.
 public export
 oneOfM : Inj ChoiceE sig
      => Algebra sig m
-     => List (m a)
+     => List (Inf (m a))
      -> m a
 oneOfM list =
   send (Choose list)
