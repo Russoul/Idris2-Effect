@@ -31,7 +31,7 @@ namespace Algebra
     -- hdl : Handler ctx n (ListT m)
     -- hdl' : Handler (List m) (ListT m) m
     -- ? : Handler (List m . ctx) n m
-    EffectAlgebra.alg {f = Functor.Compose @{(ListM, %search)}}
+    EffectAlgebra.alg {f = Functor.Compose @{ListM}}
         {ctx = ListM m . ctx}
         {m} (ctxx :: pure [])
         ((~<~) @{%search} @{Functor.ListM} { ctx1 = ListM m
