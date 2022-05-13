@@ -25,7 +25,7 @@ namespace Algebra
     alg ctx hdl (Inl (Tell s)) = MkWriterT $ \_ => pure (ctx, s)
     alg ctxx hdl (Inr x) = MkWriterT $ \r => do
      res <- alg
-       {f = Functor.Compose @{(Functor.LeftPair, %search)}}
+       {f = Functor.Compose @{Functor.LeftPair}}
        (ctxx, r) h x
      pure res
      where
@@ -45,7 +45,7 @@ namespace Algebra
      -- h : Handler (,s) (WriterT s m) m
      -- h ~<~ hdl : Handler ((, s) . ctx) n m
      res <- alg
-       {f = Functor.Compose @{(Functor.LeftPair, %search)}}
+       {f = Functor.Compose @{Functor.LeftPair}}
        (ctxx, r) h x
      pure res
      where

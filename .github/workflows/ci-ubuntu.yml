@@ -12,7 +12,7 @@ on:
 env:
   SCHEME: scheme
   IDRIS2_TESTS_CG: chez
-  IDRIS2_COMMIT: "0bc18bd34a53824cafa5a72d7790ca380648636a"
+  IDRIS2_COMMIT: "bf87b623ef64244451d10c4b5460e8fc2f88c99a"
 
 jobs:
   build:
